@@ -3,14 +3,13 @@
 import { useEffect, useRef, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 
-// ─── Floating vocabulary ───────────────────────────────────────────────────────
 const WORDS = [
-  'Next.js',     'Go',           'Django',        'PostgreSQL',
-  'Redis',       'Docker',       'AWS',           'WebSockets',
-  'TypeScript',  'React',        'Node.js',       'Python',
-  'Microservices','REST APIs',   'CI/CD',         'Nginx',
-  'Scalable',    'Resilient',    'Performant',    'Real-time',
-  'Idempotent',  'Distributed',  'Type-safe',     'Secure',
+  'Director',         'Producer',         'Music Videos',      'Commercials',
+  'Brand Films',      'Advertisements',   'Cinematography',    'Storytelling',
+  'Casting',          'Screenwriting',    'Production House',  'Creative Direction',
+  'Post Production',  'Color Grading',    'Film Editing',      'Visual Effects',
+  'Drone Cinematography','Short Films',   'Feature Films',     'OTT Content',
+  'Digital Campaigns','Cinema',           'Narrative',         'Motion Graphics',
 ];
 
 const LINE1 = 'Built to Scale.';
