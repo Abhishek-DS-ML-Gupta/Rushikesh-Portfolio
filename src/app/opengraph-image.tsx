@@ -1,17 +1,19 @@
 import { ImageResponse } from 'next/og';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 
 export const runtime = 'nodejs';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-const STACK = ['AWS', 'Docker', 'Go', 'Django', 'PostgreSQL', 'Redis'];
+const STACK = [
+  'Direction',
+  'Cinematography',
+  'Editing',
+  'Color Grading',
+  'Sound Design',
+  'Storytelling'
+];
 
 export default function Image() {
-  const logoBuffer = readFileSync(join(process.cwd(), 'public/logo/logo_white.png'));
-  const logoSrc = `data:image/png;base64,${logoBuffer.toString('base64')}`;
-
   return new ImageResponse(
     (
       <div
@@ -38,16 +40,19 @@ export default function Image() {
           }}
         />
 
-        {/* Logo */}
+        {/* Name */}
         <div style={{ display: 'flex', marginBottom: 'auto' }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={logoSrc}
-            alt="Cybersage"
-            width={104}
-            height={66}
-            style={{ objectFit: 'contain' }}
-          />
+          <span
+            style={{
+              color: 'rgba(255,255,255,0.25)',
+              fontSize: '18px',
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Rushikesh Dhuri
+          </span>
         </div>
 
         {/* Name + role block */}
@@ -60,7 +65,7 @@ export default function Image() {
               textTransform: 'uppercase',
             }}
           >
-            Infrastructure &amp; Systems Architect
+            Film Editor & Cinematography Creator.
           </span>
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -73,7 +78,7 @@ export default function Image() {
                 letterSpacing: '-0.03em',
               }}
             >
-              Abakwe
+              Rushikesh
             </span>
             <span
               style={{
@@ -84,7 +89,7 @@ export default function Image() {
                 letterSpacing: '-0.03em',
               }}
             >
-              Carrington
+              Dhuri
             </span>
           </div>
 
@@ -97,7 +102,7 @@ export default function Image() {
               margin: '6px 0 0',
             }}
           >
-            5+ years architecting distributed, production-grade systems.
+            Film Editor & Cinematography Creator.
             Available for hire — remote, worldwide.
           </p>
         </div>
@@ -138,7 +143,7 @@ export default function Image() {
               letterSpacing: '0.08em',
             }}
           >
-            cybersage.dev
+            rushikeshdhuri88@gmail.com
           </span>
         </div>
       </div>
