@@ -9,8 +9,19 @@ import { ArrowUpRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
+interface Project {
+  id: string;
+  name: string;
+  category: string;
+  tagline: string;
+  stack: string[];
+  image: string;
+  year: string;
+  link?: string;
+}
+
 // ─── Data ─────────────────────────────────────────────────────────────────────
-const PROJECTS = [
+const PROJECTS: Project[] = [
   {
     id: 'sultan-of-delhi',
     name: 'Sultan of Delhi',
@@ -101,10 +112,7 @@ const PROJECTS = [
     image: '/projects/project9.jpeg',
     year: '2024',
   },
-] as const;
-
-
-type Project = (typeof PROJECTS)[number];
+];
 
 // ─── Cube geometry ─────────────────────────────────────────────────────────────
 // Scene 0 = intro, scenes 1–16 = projects
