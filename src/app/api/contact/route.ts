@@ -1,29 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
-import fs from 'fs';
-import path from 'path';
+import nodemailer from 'nodemailer';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-function readLogoB64(filename: string): string {
+export async function POST(req: NextRequest) {
   try {
-    const buf = fs.readFileSync(path.join(process.cwd(), 'public', 'logo', filename));
-    return `data:image/png;base64,${buf.toString('base64')}`;
-  } catch {
-    return '';
-  }
-}
+    const { name, email, message } = await req.json();
 
-const LOGO_HORIZONTAL = readLogoB64('cybersage_horizontal.png');
-const LOGO_ICON = readLogoB64('cybersage_icon.png');
+    if (!name || !email || !message) {
+      return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+    }
 
-function emailTemplate({ name, email, message }: { name: string; email: string; message: string }) {
-  return `<!DOCTYPE html>
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: Number(process.env.SMTP_PORT) || 587,
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER || 'rushikeshdhuri88@gmail.com',
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"Portfolio Contact" <rushikeshdhuri88@gmail.com>`,
+      to: 'rushikeshdhuri88@gmail.com',
+      replyTo: email,
+      subject: `New message from ${name} — Portfolio`,
+      html: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>New Message — Abakwe Carrington</title>
+  <title>New Message — Rushikesh Dhuri</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,32 +43,9 @@ function emailTemplate({ name, email, message }: { name: string; email: string; 
       <td align="center">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;">
 
-          <!-- Logo bar -->
-          <tr>
-            <td style="padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.08);">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td>
-                    <img
-                      src="${LOGO_HORIZONTAL}"
-                      alt="Cybersage"
-                      width="140"
-                      style="display:block; height:auto;"
-                    />
-                  </td>
-                  <td align="right">
-                    <span style="font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.25); font-weight:500;">
-                      Portfolio Inquiry
-                    </span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
           <!-- Headline -->
           <tr>
-            <td style="padding: 48px 0 36px;">
+            <td style="padding: 0 0 36px;">
               <p style="font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(255,255,255,0.28); font-weight:500; margin-bottom:16px;">
                 New Message Received
               </p>
@@ -104,7 +87,7 @@ function emailTemplate({ name, email, message }: { name: string; email: string; 
               </p>
               <div style="border-left: 2px solid rgba(255,255,255,0.15); padding-left: 24px;">
                 <p style="font-size:15px; line-height:1.8; color:rgba(255,255,255,0.7); white-space:pre-line;">
-                  ${message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                  ${message.replace(/</g, '<').replace(/>/g, '>')}
                 </p>
               </div>
             </td>
@@ -126,35 +109,11 @@ function emailTemplate({ name, email, message }: { name: string; email: string; 
             </td>
           </tr>
 
-          <!-- Divider -->
-          <tr>
-            <td style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 32px; padding-bottom: 8px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tr>
-                  <td>
-                    <img
-                      src="${LOGO_ICON}"
-                      alt=""
-                      width="28"
-                      style="display:block; height:auto; opacity:0.3;"
-                    />
-                  </td>
-                  <td align="right">
-                    <p style="font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.18);">
-                      abakwecarrington@gmail.com
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
           <!-- Footer -->
           <tr>
-            <td style="padding-top: 20px;">
+            <td style="padding-top: 8px;">
               <p style="font-size:10px; letter-spacing:0.12em; color:rgba(255,255,255,0.12); line-height:1.8;">
-                This message was submitted via the contact form at cybersage.dev<br/>
-                © 2026 Abakwe Carrington · All rights reserved
+                This message was submitted via the contact form on your portfolio
               </p>
             </td>
           </tr>
@@ -165,28 +124,8 @@ function emailTemplate({ name, email, message }: { name: string; email: string; 
   </table>
 
 </body>
-</html>`;
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    const { name, email, message } = await req.json();
-
-    if (!name || !email || !message) {
-      return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
-    }
-
-    const { error } = await resend.emails.send({
-      from: 'Portfolio Contact <onboarding@resend.dev>',
-      to: 'abakwecarrington@gmail.com',
-      replyTo: email,
-      subject: `New message from ${name} — Portfolio`,
-      html: emailTemplate({ name, email, message }),
+</html>`,
     });
-
-    if (error) {
-      return NextResponse.json({ error }, { status: 500 });
-    }
 
     return NextResponse.json({ success: true });
   } catch (err) {
